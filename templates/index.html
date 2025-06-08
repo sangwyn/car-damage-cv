@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Car Damage Analyzer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Car Damage Assessment</h1>
+        <div class="input-group">
+            <input type="url" id="imageUrl" placeholder="Paste image URL here">
+            <button onclick="analyze()">Assess Damage</button>
+        </div>
+
+        <div style="
+        background: white;
+        border-radius: 8px;
+        padding: 20px;
+        font-family: 'Segoe UI', Tahoma, sans-serif;
+        /* box-shadow: 0 2px 8px rgba(0,0,0,0.08); */
+        max-width: 500px;
+        margin: 0 auto;
+      ">
+        <h3 style="margin: 0 0 15px 0; color: #1e293b; font-weight: 600;">Шкала оценки повреждений</h3>
+        
+        <!-- Градиентная линия с точками -->
+        <div style="
+          position: relative;
+          height: 40px;
+          margin: 0 15px 40px 15px;
+        ">
+          <!-- Линия с градиентом -->
+          <div style="
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(to right, #22c55e, #ef4444);
+            border-radius: 2px;
+          "></div>
+          
+          <!-- Точки шкалы -->
+          <div style="position: absolute; left: 0; top: 10px; text-align: center;">
+            <div style="
+              width: 24px; height: 24px; 
+              background: #22c55e; 
+              border-radius: 50%;
+              margin-left: -12px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              color: white;
+              font-weight: bold;
+              box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            ">1</div>
+            <div style="color:black; position: absolute; top: 35px; left: 0; width: 100px; margin-left: -40px; font-size: 0.85em;">
+              Косметические дефекты
+            </div>
+          </div>
+          
+          <div style="position: absolute; left: 25%; top: 10px; text-align: center;">
+            <div style="
+              width: 20px; height: 20px; 
+              background: #4ade80; 
+              border-radius: 50%;
+              margin-left: -12px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              color: white;
+              font-weight: bold;
+              box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            ">2</div>
+          </div>
+          
+          <div style="position: absolute; left: 50%; top: 10px; text-align: center;">
+            <div style="
+              width: 20px; height: 20px; 
+              background: #f59e0b; 
+              border-radius: 50%;
+              margin-left: -12px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              color: white;
+              font-weight: bold;
+              box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            ">3</div>
+            <div style="position: absolute; top: 35px; left: 0; width: 120px; margin-left: -50px; font-size: 0.85em;">
+            </div>
+          </div>
+          
+          <div style="position: absolute; left: 75%; top: 10px; text-align: center;">
+            <div style="
+              width: 20px; height: 20px; 
+              background: #f97316; 
+              border-radius: 50%;
+              margin-left: -12px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              color: white;
+              font-weight: bold;
+              box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            ">4</div>
+          </div>
+          
+          <div style="position: absolute; right: 0; top: 10px; text-align: center;">
+            <div style="
+              width: 24px; height: 24px; 
+              background: #ef4444; 
+              border-radius: 50%;
+              margin-left: -12px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              color: white;
+              font-weight: bold;
+              box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            ">5</div>
+            <div style="color:black; position: absolute; top: 35px; left: 0; width: 100px; margin-left: -40px; font-size: 0.85em;">
+              Критические повреждения
+            </div>
+          </div>
+        </div>
+        
+        <div style="
+          display: flex;
+          justify-content: space-between;
+          margin-top: 10px;
+          color: #64748b;
+          font-size: 0.9em;
+        ">
+        </div>
+      </div>
+      
+        
+        <div id="result" class="hidden">
+            <h2>Damage Grade: <span id="grade"></span></h2>
+            <img id="resultImage" src="" alt="Analyzed car">
+        </div>
+        
+        <div id="error" class="hidden"></div>
+    </div>
+
+    <script>
+        function analyze() {
+            const url = document.getElementById('imageUrl').value;
+            if (!url) {
+                showError("Please enter an image URL");
+                return;
+            }
+
+            // Clear previous results
+            document.getElementById('error').classList.add('hidden');
+            document.getElementById('result').classList.add('hidden');
+
+            fetch('/analyze', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({'image_url': url})
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    showError(data.error);
+                } else {
+                    // console.log(data.score)
+                    showResult(data.score, data.url);
+                }
+            })
+            .catch(error => {
+                showError("Network error: " + error.message);
+            });
+        }
+
+        function showResult(grade, imageUrl) {
+            const gradeElement = document.getElementById('grade');
+            gradeElement.textContent = grade;
+            gradeElement.className = 'grade-' + grade;
+            
+            const imgElement = document.getElementById('resultImage');
+            imgElement.src = imageUrl;
+            
+            document.getElementById('result').classList.remove('hidden');
+        }
+
+        function showError(message) {
+            const errorElement = document.getElementById('error');
+            errorElement.textContent = message;
+            errorElement.classList.remove('hidden');
+        }
+    </script>
+
+    
+</body>
+</html>

@@ -1,0 +1,1 @@
+A task from hackathon 07.06-08.06 2025. Cleanup is needed.
