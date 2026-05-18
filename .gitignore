@@ -183,6 +183,13 @@ cython_debug/
 # Ruff stuff:
 .ruff_cache/
 
+# Project artifacts
+data/
+checkpoints/
+uploads/
+*.pth
+*.pt
+
 # PyPI configuration file
 .pypirc
 

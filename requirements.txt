@@ -1,0 +1,8 @@
+flask
+numpy
+pillow
+requests
+segmentation-models-pytorch
+torch
+torchvision
+tqdm
