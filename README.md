@@ -2,6 +2,9 @@
 
 Computer vision project for estimating car damage severity from a photo. Created for "[ВНЕДРЕЙД](https://www.orionsoft.ru/events/vnedreid-nbspxakatonnbspotnbsporionnbspsoft)" hackathon 07-08.06, 2025.
 
+<img width="1338" height="959" alt="image_2025-06-08_17-09-00 (2)" src="https://github.com/user-attachments/assets/57a0f2d7-5edb-497c-84fa-ab79f8bdcbb8" />
+
+
 The current pipeline uses two semantic segmentation models:
 
 - damage model: predicts 9 damage classes
